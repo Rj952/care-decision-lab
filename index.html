@@ -269,7 +269,7 @@ footer b{color:var(--ink)}
 </main>
 
 <footer><div class="wrap">
-  <div><b>CARE Framework</b> (Jowallah, forthcoming): Consider stakeholders, benefits and risks · Analyze bias, data and limitations · Reflect on values and equity · Evaluate alternatives and impact. Prompt elements adapted from presentations by C. Berry and K. Edwards.</div>
+  <div><b>CARE Framework</b> (Jowallah, 2025): Consider stakeholders, benefits and risks · Analyze bias, data and limitations · Reflect on values and equity · Evaluate alternatives and impact. Prompt elements adapted from presentations by C. Berry and K. Edwards.</div>
   <div>Part of <b>Leading with CARE: Critical AI for Teaching, Learning and Assessment</b>.</div>
 </div></footer>
 
@@ -388,7 +388,7 @@ function summary(){
   STAGES.forEach(st=>{o+=`${st.name.toUpperCase()} (${st.sub}): ${r[st.k]}/5\n`;if(st.bias&&d.bias.length)o+=`  Possible biases: ${d.bias.join(", ")}\n`;st.qs.forEach((q,i)=>{const v=(d.notes[st.k+i]||"").trim();if(v)o+=`  ${q[0]}\n  ${v}\n`;});o+="\n";});
   o+=`TOTAL: ${t}/20 (${band(t)})\nDECISION: ${dec?dec[1]:"Not yet decided"}\n`;
   if(d.safeguards.trim())o+=`SAFEGUARDS: ${d.safeguards.trim()}\n`;
-  return o+"\nCARE Framework (Jowallah, forthcoming)";
+  return o+"\nCARE Framework (Jowallah, 2025)";
 }
 function copy(){
   const txt=summary(),st=$("#status");
