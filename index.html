@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CARE Decision Lab</title>
+<meta name="description" content="An ethical decision lab for educators using AI, built on the CARE Framework: Consider, Analyze, Reflect, Evaluate.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Modernist grid: hard rules, oversized letterforms, four primary stage colours; nothing rounded */
+:root{
+  --bg:#FFFFFF; --ink:#0A0A0B; --muted:#5E6066; --line:#0A0A0B; --hair:#DADBDE; --wash:#F4F4F5;
+  --c:#1D3BF0; --a:#F0501D; --r:#0B9B63; --e:#F2B705; --on-e:#0A0A0B; --on:#FFFFFF;
+  --sans:"Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0B0D; --ink:#F2F2F3; --muted:#9A9CA3; --line:#F2F2F3; --hair:#2B2C31; --wash:#16171A;
+  --c:#5D74FF; --a:#FF7547; --r:#2BC48A; --e:#F5C53A; --on:#0B0B0D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0B0D; --ink:#F2F2F3; --muted:#9A9CA3; --line:#F2F2F3; --hair:#2B2C31; --wash:#16171A;
+  --c:#5D74FF; --a:#FF7547; --r:#2BC48A; --e:#F5C53A; --on:#0B0B0D; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--sans)}
+[hidden]{display:none!important}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+button,select,textarea,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+
+/* top */
+.top{border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5;background:var(--bg)}
+.top .wrap{display:flex;align-items:stretch;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px;padding-block:14px;text-decoration:none;color:inherit}
+.logo .sq{display:grid;grid-template-columns:repeat(2,12px);gap:2px}
+.logo .sq i{width:12px;height:12px;display:block}
+.logo b{font-weight:800;letter-spacing:-.01em;font-size:1.05rem}
+.logo .t{display:block;color:var(--ink)}
+.logo .t span{color:var(--muted);font-size:.85rem;display:block;font-weight:500}
+nav.tabs{display:flex;align-items:stretch}
+nav.tabs button{border:0;background:none;padding:0 18px;font-weight:700;font-size:.92rem;cursor:pointer;border-left:1px solid var(--hair);color:var(--muted)}
+nav.tabs button:last-child{border-right:1px solid var(--hair)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -5px 0 var(--ink)}
+@media (max-width:640px){nav.tabs{width:100%;border-top:1px solid var(--hair)}nav.tabs button{flex:1;padding:12px 6px}nav.tabs button:first-child{border-left:0}nav.tabs button:last-child{border-right:0}}
+
+/* hero */
+.hero{border-bottom:2px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;padding-block:44px 36px;align-items:end}
+@media (max-width:860px){.hero .wrap{grid-template-columns:minmax(0,1fr);padding-block:32px 28px}}
+.hero h1{margin:0;font-weight:800;font-size:clamp(2.4rem,6.4vw,5.2rem);line-height:.95;letter-spacing:-.035em;text-wrap:balance}
+.hero h1 em{font-style:normal}
+.hero p{margin:0;max-width:46ch;color:var(--muted);font-size:1.02rem}
+.hero .kicker{font:500 .78rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);margin-bottom:14px;display:block}
+
+/* lab */
+main{padding-block:0 64px}
+.lab{display:grid;grid-template-columns:320px minmax(0,1fr);border-bottom:1px solid var(--hair)}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.cases{border-right:1px solid var(--hair);padding-block:24px}
+@media (max-width:900px){.cases{border-right:0;border-bottom:1px solid var(--hair)}}
+.label{font:500 .74rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 12px}
+.caselist{display:flex;flex-direction:column}
+.case-btn{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:14px 16px 14px 0;border-top:1px solid var(--hair)}
+.case-btn:last-child{border-bottom:1px solid var(--hair)}
+.case-btn .n{font:500 .8rem var(--mono);color:var(--muted);padding-top:2px}
+.case-btn b{display:block;font-weight:700;font-size:.98rem;line-height:1.25}
+.case-btn small{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
+.case-btn .tag{display:inline-block;margin-top:6px;font:500 .68rem var(--mono);text-transform:uppercase;letter-spacing:.06em;background:var(--ink);color:var(--bg);padding:2px 6px}
+.case-btn[aria-pressed="true"]{box-shadow:inset 6px 0 0 var(--ink);padding-left:14px;grid-template-columns:34px minmax(0,1fr)}
+.case-btn[aria-pressed="true"] .n{color:var(--ink)}
+.case-btn:hover b{text-decoration:underline;text-underline-offset:3px}
+.case-btn:focus-visible{outline:3px solid var(--c);outline-offset:-3px}
+@media (max-width:900px){.caselist{flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}.case-btn{flex:0 0 220px;scroll-snap-align:start;border:0;border-right:1px solid var(--hair);padding:12px 14px}.case-btn:last-child{border-bottom:0}.case-btn[aria-pressed="true"]{box-shadow:inset 0 -5px 0 var(--ink);padding-left:14px}}
+
+.sheet{padding:24px 0 32px 32px;min-width:0}
+@media (max-width:900px){.sheet{padding:24px 0 32px}}
+.casehead h2{margin:0 0 8px;font-weight:800;font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-.025em;line-height:1.05;text-wrap:balance}
+.casehead p{margin:0;max-width:64ch;font-size:1.02rem}
+.casehead .label{font-size:.74rem;margin-bottom:8px}
+.casehead textarea{margin-top:12px}
+
+.stepper{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:28px 0 28px;border:2px solid var(--line)}
+.stepper button{all:unset;box-sizing:border-box;cursor:pointer;padding:12px 10px 10px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.stepper button:last-child{border-right:0}
+.stepper .L{font-weight:800;font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:1;letter-spacing:-.04em}
+.stepper .w{font-size:.78rem;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stepper button[aria-current="step"]{background:var(--sc);color:var(--sc-on)}
+.stepper button[aria-current="step"] .w{color:inherit}
+.stepper button:focus-visible{outline:3px solid var(--ink);outline-offset:-5px}
+
+.stage-title{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+.stage-title .big{font-weight:800;font-size:clamp(3.2rem,8vw,5.5rem);line-height:.85;letter-spacing:-.05em;color:var(--sc)}
+.stage-title h3{margin:0;font-size:1.5rem;font-weight:800;letter-spacing:-.015em}
+.stage-title h3 small{display:block;font-size:.95rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.ground{font:500 .74rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 24px}
+
+.q{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-block:16px;border-top:1px solid var(--hair)}
+.q label,.q .ql{font-weight:700}
+.q .hint{color:var(--muted);font-size:.88rem;margin-top:-2px}
+textarea{width:100%;min-height:84px;resize:vertical;border:1px solid var(--hair);border-bottom:2px solid var(--line);background:var(--wash);padding:12px 14px;line-height:1.5;border-radius:0}
+textarea:focus{border-bottom-color:var(--sc,var(--c));outline:none;background:var(--bg)}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.chk{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);padding:7px 12px;font-size:.86rem;font-weight:600;cursor:pointer;user-select:none}
+.chk input{position:absolute;opacity:0;pointer-events:none}
+.chk::before{content:"";width:10px;height:10px;border:1.5px solid currentColor}
+.chk:has(input:checked){background:var(--ink);color:var(--bg)}
+.chk:has(input:checked)::before{background:currentColor}
+.chk:has(input:focus-visible){outline:3px solid var(--c);outline-offset:2px}
+
+.rating{margin-top:8px;border-top:2px solid var(--line);padding-top:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 24px;align-items:center}
+@media (max-width:560px){.rating{grid-template-columns:minmax(0,1fr)}}
+.rating .rl{font-weight:800;font-size:1.05rem}
+.rating .rl small{display:block;font:500 .74rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.scale{display:flex;border:2px solid var(--line)}
+.scale button{all:unset;box-sizing:border-box;cursor:pointer;width:52px;height:52px;display:grid;place-items:center;font:500 1.05rem var(--mono);border-right:1px solid var(--line)}
+.scale button:last-child{border-right:0}
+.scale button[aria-pressed="true"]{background:var(--sc);color:var(--sc-on)}
+.scale button:focus-visible{outline:3px solid var(--ink);outline-offset:-5px}
+
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap}
+.btn{border:2px solid var(--line);background:var(--bg);padding:12px 20px;font-weight:700;cursor:pointer;border-radius:0}
+.btn.solid{background:var(--ink);color:var(--bg)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:not(:disabled):hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink)}
+@media (prefers-reduced-motion:reduce){.btn:not(:disabled):hover{transform:none}}
+
+/* decision */
+.tally{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.6fr);border:2px solid var(--line);margin:20px 0 28px}
+@media (max-width:640px){.tally{grid-template-columns:repeat(4,minmax(0,1fr))}.tally .tot{grid-column:1/-1;border-top:2px solid var(--line)}}
+.tally{align-items:stretch}
+.tally > div{padding:14px;border-right:1px solid var(--line);min-width:0}
+.tally > div:last-child{border-right:0}
+.tally .k{font-weight:800;font-size:1.4rem;line-height:1}
+.tally .v{font:500 1.6rem var(--mono);font-variant-numeric:tabular-nums;display:block;margin-top:6px}
+.tally .v small{font-size:.8rem;color:var(--muted)}
+.tally .tot{background:var(--ink);color:var(--bg)}
+.tally .tot .v{font-size:2.2rem}
+.tally .tot .v small{color:inherit;opacity:.7}
+.tally .band{display:block;font-weight:700;font-size:.9rem;margin-top:4px}
+.decs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line);margin-bottom:8px}
+.dec{all:unset;box-sizing:border-box;cursor:pointer;padding:14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.dec b{display:block;font-weight:800}
+.dec span{display:block;font-size:.84rem;color:var(--muted);margin-top:2px}
+.dec[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.dec[aria-pressed="true"] span{color:inherit;opacity:.75}
+.dec:focus-visible{outline:3px solid var(--c);outline-offset:-3px}
+.small{font-size:.85rem;color:var(--muted)}
+.status{min-height:1.4em;font-weight:600;margin-top:12px}
+.status.ok{color:var(--r)} .status.err{color:var(--a)}
+#copybox{min-height:240px;font:500 .82rem/1.5 var(--mono);margin-top:12px}
+
+/* cohort */
+.section-head{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:end;padding-block:28px 20px;border-bottom:2px solid var(--line)}
+.section-head h2{margin:0;font-weight:800;font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-.025em;line-height:1.05}
+.section-head p{margin:6px 0 0;color:var(--muted);max-width:56ch}
+select{border:2px solid var(--line);background:var(--bg);padding:10px 12px;font-weight:700;border-radius:0;max-width:100%}
+.cohort-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid var(--hair)}
+@media (max-width:860px){.cohort-grid{grid-template-columns:minmax(0,1fr)}}
+.cohort-grid > section{padding:24px 24px 28px 0;min-width:0}
+.cohort-grid > section + section{padding-left:24px;border-left:1px solid var(--hair)}
+@media (max-width:860px){.cohort-grid > section + section{padding-left:0;border-left:0;border-top:1px solid var(--hair)}}
+.stat{font-weight:800;font-size:clamp(3rem,7vw,4.6rem);line-height:.9;letter-spacing:-.04em}
+.stat-row{display:flex;gap:32px;flex-wrap:wrap;margin:6px 0 24px;align-items:end}
+.stat-row div small{display:block;font:500 .74rem var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:6px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 40px;gap:12px;align-items:center;padding-block:9px;border-top:1px solid var(--hair);font-size:.92rem}
+@media (max-width:480px){.bar{grid-template-columns:108px minmax(0,1fr) 34px}}
+.bar .lbl{font-weight:700}
+.bar .track{height:18px;background:var(--wash);position:relative}
+.bar .fill{height:100%}
+.bar .you{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--ink)}
+.bar .num{font:500 .9rem var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.empty{padding:40px 0;max-width:52ch}
+.empty b{display:block;font-size:1.2rem;font-weight:800;margin-bottom:6px}
+.prompt-q{margin-top:24px;padding:18px;border:2px solid var(--line);font-weight:600}
+
+/* gym */
+.gym{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);border-bottom:1px solid var(--hair)}
+@media (max-width:900px){.gym{grid-template-columns:minmax(0,1fr)}}
+.gym > section{padding:24px 24px 32px 0;min-width:0}
+.gym > section + section{padding-left:24px;border-left:1px solid var(--hair)}
+@media (max-width:900px){.gym > section + section{padding-left:0;border-left:0;border-top:1px solid var(--hair)}}
+.presets{display:flex;flex-wrap:wrap;gap:0;margin-bottom:12px;border:1px solid var(--line);width:max-content;max-width:100%}
+.presets button{border:0;border-right:1px solid var(--line);background:none;padding:8px 12px;font-size:.84rem;font-weight:700;cursor:pointer}
+.presets button:last-child{border-right:0}
+.presets button:hover{background:var(--ink);color:var(--bg)}
+#prompt{min-height:200px;font-size:1rem}
+.meter{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin:14px 0 8px}
+.meter i{height:10px;background:var(--wash);display:block}
+.meter i.on{background:var(--ink)}
+.gscore{display:flex;align-items:baseline;gap:10px}
+.gscore .stat{font-size:3rem}
+.tip{margin-top:18px;padding:16px 18px;background:var(--e);color:var(--on-e);font-weight:600}
+.tip b{display:block;font:500 .74rem var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.elist{list-style:none;margin:0;padding:0;counter-reset:el}
+.elist li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:start;padding-block:12px;border-top:1px solid var(--hair)}
+.elist li:last-child{border-bottom:1px solid var(--hair)}
+.elist .i{font:500 .8rem var(--mono);color:var(--muted);padding-top:2px}
+.elist b{display:block}
+.elist small{color:var(--muted);font-size:.85rem}
+.elist .st{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border:1px solid var(--line)}
+.elist .st.on{background:var(--ink);color:var(--bg)}
+
+footer{padding-block:28px 40px;color:var(--muted);font-size:.85rem}
+footer .wrap{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:24px}
+@media (max-width:760px){footer .wrap{grid-template-columns:minmax(0,1fr)}}
+footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="#" aria-label="CARE Decision Lab home">
+    <span class="sq" aria-hidden="true"><i style="background:var(--c)"></i><i style="background:var(--a)"></i><i style="background:var(--r)"></i><i style="background:var(--e)"></i></span>
+    <span class="t"><b>CARE Decision Lab</b><span>Leading with CARE</span></span>
+  </a>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-lab" aria-selected="true" data-view="lab">Decide</button>
+    <button role="tab" id="tab-cohort" aria-selected="false" data-view="cohort">Cohort</button>
+    <button role="tab" id="tab-gym" aria-selected="false" data-view="gym">Prompt Gym</button>
+  </nav>
+</div></header>
+
+<section class="hero" id="hero"><div class="wrap">
+  <h1><span style="color:var(--c)">Consider.</span> <span style="color:var(--a)">Analyze.</span> <span style="color:var(--r)">Reflect.</span> <span style="color:var(--e)">Evaluate.</span></h1>
+  <div><span class="kicker">An ethical decision lab for educators</span><p>Work through a real classroom case, rate each stage, and reach a decision about using AI. Then see how colleagues decided. Your notes stay on your device; only your ratings and decision are shared, anonymously.</p></div>
+</div></section>
+
+<main>
+  <div class="wrap">
+  <!-- DECIDE -->
+  <section id="view-lab" role="tabpanel" aria-labelledby="tab-lab">
+    <div class="lab">
+      <aside class="cases" aria-label="Cases"><p class="label">Cases</p><div class="caselist" id="caselist"></div></aside>
+      <div class="sheet" id="sheet"></div>
+    </div>
+  </section>
+
+  <!-- COHORT -->
+  <section id="view-cohort" role="tabpanel" aria-labelledby="tab-cohort" hidden>
+    <div class="section-head">
+      <div><h2>How the cohort decided</h2><p>Anonymous responses for one case. The black mark shows your own rating.</p></div>
+      <label for="cohort-pick" class="small">Case<br><select id="cohort-pick"></select></label>
+    </div>
+    <div id="cohort"></div>
+  </section>
+
+  <!-- GYM -->
+  <section id="view-gym" role="tabpanel" aria-labelledby="tab-gym" hidden>
+    <div class="section-head"><div><h2>Prompt Gym</h2><p>Paste a prompt you would use for a teaching task. The checker looks for the seven elements of a strong prompt and tells you what to add next.</p></div></div>
+    <div class="gym">
+      <section>
+        <p class="label">Your prompt</p>
+        <div class="presets" role="group" aria-label="Load an example"><button type="button" data-preset="0">Vague</button><button type="button" data-preset="1">Improved</button><button type="button" data-preset="2">Strong</button></div>
+        <label for="prompt" class="small">Prompt text</label>
+        <textarea id="prompt" spellcheck="true"></textarea>
+        <div class="meter" id="meter" aria-hidden="true"></div>
+        <div class="gscore"><span class="stat" id="gnum">0</span><span id="gtxt" class="small"></span></div>
+        <div class="tip" id="gtip"></div>
+      </section>
+      <section>
+        <p class="label">Seven elements</p>
+        <ol class="elist" id="elist"></ol>
+      </section>
+    </div>
+  </section>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <div><b>CARE Framework</b> (Jowallah, forthcoming): Consider stakeholders, benefits and risks · Analyze bias, data and limitations · Reflect on values and equity · Evaluate alternatives and impact. Prompt elements adapted from presentations by C. Berry and K. Edwards.</div>
+  <div>Part of <b>Leading with CARE: Critical AI for Teaching, Learning and Assessment</b>.</div>
+</div></footer>
+
+<script>
+(function(){
+"use strict";
+/* ---- config: cohort store (Supabase, insert + read only, anonymous) ---- */
+const SB_URL="https://yjtahynkggizwtuuuvuw.supabase.co";
+const SB_KEY="sb_publishable_6bciSgUeyiSManbbgs5_jA_3K1kT5Q8";
+const TABLE="care_responses";
+
+const SCENARIOS=[
+ {id:"feedback",t:"AI feedback on essays",s:"English · Grade 10",d:"A teacher with 120 essays to mark wants students to paste their first drafts into a free chatbot for feedback before final submission."},
+ {id:"atrisk",t:"Flagging at-risk students",s:"Whole school",d:"The school is offered an AI tool that uses attendance, grades and behaviour records to flag which students are likely to fail CSEC mathematics."},
+ {id:"detector",t:"AI detector for SBAs",s:"Department policy",d:"A head of department proposes running every School-Based Assessment through an AI-text detector and treating high scores as evidence of misconduct."},
+ {id:"planning",t:"AI lesson planning",s:"Science · Grade 7",d:"A teacher uses AI to draft a full term of science lesson plans with local examples, then edits them before teaching."},
+ {id:"tutor",t:"AI homework tutor",s:"Mathematics · Grades 8–9",d:"Students are encouraged to use an AI tutor at home for mathematics homework. Not all students have devices or data at home."},
+ {id:"images",t:"AI images of local history",s:"Social Studies",d:"A teacher generates images of Maroon communities and Emancipation Day for a history lesson because suitable photographs are hard to find."},
+ {id:"access",t:"Reading support for dyslexia",s:"Inclusion",d:"A teacher uses text-to-speech and AI-simplified versions of texts to support a student with dyslexia in a mixed-ability class."},
+ {id:"parents",t:"Translating notices for parents",s:"Communication",d:"The school uses AI to translate notices for parents who speak Spanish or Haitian Creole, including notices about student behaviour."},
+ {id:"own",t:"My own case",s:"Your practice",d:"Describe an AI use you are considering in your own teaching. Your own case is not shared with the cohort.",own:true}
+];
+const STAGES=[
+ {k:"c",L:"C",name:"Consider",sub:"Stakeholders, benefits and risks",ground:"Beneficence and non-maleficence · Belmont Report",col:"var(--c)",on:"var(--on)",rate:"Overall benefit-to-risk ratio",
+  qs:[["Who are all the stakeholders?","Students, parents, colleagues, administrators, the community."],["What benefits could this bring?","Learning, efficiency, accessibility, engagement, equity."],["What risks, and who might be harmed or disadvantaged?","Privacy, accuracy, bias, dependency, exclusion. Think of students without access."]]},
+ {k:"a",L:"A",name:"Analyze",sub:"Bias, data and limitations",ground:"Algorithmic bias in education · Baker & Hawn",col:"var(--a)",on:"var(--on)",rate:"Confidence in AI reliability for this use",
+  bias:["Gender","Racial or ethnic","Socioeconomic","Cultural or language","Ability","Age"],
+  qs:[["What do you know about the data behind this tool?","Where does it come from? Is it current and relevant to your learners?"],["What are its known limitations?","Hallucination, errors, context gaps, how it handles Creole and local names."],["How transparent is it?","Can you explain its output, verify it and challenge it?"]]},
+ {k:"r",L:"R",name:"Reflect",sub:"Values alignment and equity",ground:"Reflective practice · Schön; Brookfield",col:"var(--r)",on:"var(--on)",rate:"Alignment with your values",
+  qs:[["Does this fit your educational values?","Learning, student agency, academic integrity."],["What would your students and colleagues say?","Would students feel supported, surveilled or disadvantaged?"],["What are the equity implications, and what are you assuming?","Access, opportunity and outcomes for diverse learners."]]},
+ {k:"e",L:"E",name:"Evaluate",sub:"Alternatives and impact",ground:"Double-loop learning · Argyris & Schön",col:"var(--e)",on:"var(--on-e)",rate:"Confidence this is the best approach",
+  qs:[["Is AI the best approach? What alternatives exist?","List two or three, with trade-offs."],["How will you measure impact, and who is accountable?","What evidence will you collect? Who answers if it goes wrong?"],["What would make you change or stop?","Name the trigger."]]}
+];
+const DECISIONS=[["proceed","Proceed","Benefits clearly outweigh risks"],["modify","Proceed with safeguards","Go ahead with specific protections"],["pilot","Pilot first","Test on a small scale"],["delay","Delay","Need more information or preparation"],["stop","Do not proceed","Risks too high or values misaligned"]];
+const DEC_COL={proceed:"var(--r)",modify:"var(--c)",pilot:"var(--ink)",delay:"var(--e)",stop:"var(--a)"};
+const band=t=>t>=16?"Strong case for proceeding":t>=11?"Proceed with caution and safeguards":t>=6?"Significant concerns: reconsider":"Do not proceed as planned";
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---- local storage ---- */
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let pid=ls.get("care-pid"); if(!pid||typeof pid!=="string"||pid.length<8){pid=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2,12));ls.set("care-pid",pid);}
+let drafts=ls.get("care-drafts")||{}, shared=ls.get("care-shared")||{};
+const draft=id=>drafts[id]||(drafts[id]={notes:{},bias:[],ratings:{c:3,a:3,r:3,e:3},decision:null,safeguards:"",own:""});
+let pT;const persist=()=>{clearTimeout(pT);pT=setTimeout(()=>ls.set("care-drafts",drafts),250)};
+let current=ls.get("care-current"); if(!SCENARIOS.some(s=>s.id===current)) current="feedback";
+let step=0;
+
+/* ---- tabs ---- */
+$$("nav.tabs button").forEach(b=>b.addEventListener("click",()=>{
+  $$("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b?"true":"false"));
+  ["lab","cohort","gym"].forEach(v=>$("#view-"+v).hidden=v!==b.dataset.view);
+  $("#hero").hidden=b.dataset.view!=="lab";
+  if(b.dataset.view==="cohort") loadCohort();
+}));
+
+/* ---- cases ---- */
+function renderCases(){
+  $("#caselist").innerHTML=SCENARIOS.map((s,i)=>`<button type="button" class="case-btn" data-id="${s.id}" aria-pressed="${s.id===current}"><span class="n">${String(i+1).padStart(2,"0")}</span><span><b>${esc(s.t)}</b><small>${esc(s.s)}</small>${shared[s.id]?'<span class="tag">Shared</span>':""}</span></button>`).join("");
+  $$(".case-btn").forEach(b=>b.addEventListener("click",()=>{current=b.dataset.id;step=0;ls.set("care-current",current);renderCases();renderSheet();}));
+}
+
+/* ---- sheet ---- */
+function renderSheet(){
+  const s=SCENARIOS.find(x=>x.id===current), d=draft(current);
+  const st=STAGES[step]||{col:"var(--ink)",on:"var(--bg)"};
+  const steps=STAGES.map((x,i)=>`<button type="button" data-step="${i}" ${i===step?'aria-current="step"':""} style="--sc:${x.col};--sc-on:${x.on}"><span class="L">${x.L}</span><span class="w">${x.name}</span></button>`).join("")
+    +`<button type="button" data-step="4" ${step===4?'aria-current="step"':""} style="--sc:var(--ink);--sc-on:var(--bg)"><span class="L">→</span><span class="w">Decide</span></button>`;
+  let body;
+  if(step<4){
+    body=`<div style="--sc:${st.col};--sc-on:${st.on}">
+      <div class="stage-title"><span class="big" aria-hidden="true">${st.L}</span><h3>${st.name}<small>${st.sub}</small></h3></div>
+      <p class="ground">${st.ground}</p>
+      ${st.bias?`<div class="q"><span class="ql" id="bias-l">Which biases could be present?</span><div class="checks" role="group" aria-labelledby="bias-l">${st.bias.map((b,i)=>`<label class="chk"><input type="checkbox" id="bias-${i}" data-bias="${esc(b)}" ${d.bias.includes(b)?"checked":""}>${esc(b)}</label>`).join("")}</div></div>`:""}
+      ${st.qs.map((q,i)=>`<div class="q"><label for="q-${st.k}${i}">${q[0]}</label><span class="hint">${q[1]}</span><textarea id="q-${st.k}${i}" data-note="${st.k}${i}">${esc(d.notes[st.k+i]||"")}</textarea></div>`).join("")}
+      <div class="rating"><span class="rl" id="rl">${st.rate}<small>1 low · 5 high</small></span><div class="scale" role="group" aria-labelledby="rl">${[1,2,3,4,5].map(n=>`<button type="button" data-rate="${n}" aria-pressed="${d.ratings[st.k]===n}" aria-label="${n} of 5">${n}</button>`).join("")}</div></div>
+      <div class="pager"><button class="btn" id="prev" type="button" ${step===0?"disabled":""}>← Back</button><button class="btn solid" id="next" type="button">${step===3?"See decision →":"Next: "+STAGES[step+1].name+" →"}</button></div>
+    </div>`;
+  } else {
+    const r=d.ratings,t=r.c+r.a+r.r+r.e;
+    body=`<div class="stage-title"><span class="big" aria-hidden="true" style="color:var(--ink)">${t}</span><h3>Your decision<small>Total out of 20 · ${band(t)}</small></h3></div>
+      <div class="tally">${STAGES.map(x=>`<div><span class="k" style="color:${x.col}">${x.L}</span><span class="v">${r[x.k]}<small>/5</small></span></div>`).join("")}<div class="tot"><span class="k">Total</span><span class="v">${t}<small>/20</small></span><span class="band">${band(t)}</span></div></div>
+      <p class="label">Decision</p>
+      <div class="decs" role="group" aria-label="Decision">${DECISIONS.map(x=>`<button type="button" class="dec" data-dec="${x[0]}" aria-pressed="${d.decision===x[0]}"><b>${x[1]}</b><span>${x[2]}</span></button>`).join("")}</div>
+      <div class="q" style="border-top:0"><label for="safeguards">Safeguards, and what students will be told</label><span class="hint">What will you put in place? How will you explain the AI use to learners?</span><textarea id="safeguards">${esc(d.safeguards)}</textarea></div>
+      <div class="pager" style="justify-content:flex-start">
+        ${s.own?"":`<button class="btn solid" id="share" type="button" ${d.decision?"":"disabled"}>${shared[current]?"Share again":"Share with cohort"}</button>`}
+        <button class="btn" id="copy" type="button">Copy summary for portfolio</button>
+      </div>
+      <div class="status" id="status" role="status"></div>
+      <p class="small">${s.own?"Your own case stays on this device.":"Shared anonymously: four ratings and your decision. Your notes never leave this device."}</p>
+      <textarea id="copybox" hidden readonly aria-label="Summary text"></textarea>`;
+  }
+  $("#sheet").innerHTML=`<div class="casehead"><p class="label">${esc(s.s)}</p><h2>${esc(s.t)}</h2><p>${esc(s.d)}</p>${s.own?`<label class="small" for="own" style="display:block;margin-top:12px">Describe your case</label><textarea id="own" placeholder="The tool, the task and the learners involved.">${esc(d.own)}</textarea>`:""}</div>
+    <div class="stepper" role="list">${steps}</div>${body}`;
+  wire();
+}
+function wire(){
+  const d=draft(current);
+  $$("[data-step]").forEach(b=>b.addEventListener("click",()=>{step=+b.dataset.step;renderSheet();}));
+  $$("[data-note]").forEach(t=>t.addEventListener("input",()=>{d.notes[t.dataset.note]=t.value;persist();}));
+  $$("[data-bias]").forEach(c=>c.addEventListener("change",()=>{const v=c.dataset.bias;d.bias=c.checked?[...new Set([...d.bias,v])]:d.bias.filter(x=>x!==v);persist();}));
+  $$("[data-rate]").forEach(b=>b.addEventListener("click",()=>{d.ratings[STAGES[step].k]=+b.dataset.rate;persist();$$("[data-rate]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));}));
+  const own=$("#own"); if(own) own.addEventListener("input",()=>{d.own=own.value;persist();});
+  const p=$("#prev"),n=$("#next");
+  if(p) p.addEventListener("click",()=>{step=Math.max(0,step-1);renderSheet();});
+  if(n) n.addEventListener("click",()=>{step=Math.min(4,step+1);renderSheet();$("#sheet").scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});});
+  $$("[data-dec]").forEach(b=>b.addEventListener("click",()=>{d.decision=b.dataset.dec;persist();$$("[data-dec]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));const sh=$("#share");if(sh)sh.disabled=false;}));
+  const sg=$("#safeguards"); if(sg) sg.addEventListener("input",()=>{d.safeguards=sg.value;persist();});
+  const sh=$("#share"); if(sh) sh.addEventListener("click",share);
+  const cp=$("#copy"); if(cp) cp.addEventListener("click",copy);
+}
+function summary(){
+  const s=SCENARIOS.find(x=>x.id===current),d=draft(current),r=d.ratings,t=r.c+r.a+r.r+r.e,dec=DECISIONS.find(x=>x[0]===d.decision);
+  let o=`CARE ANALYSIS: ${s.t}\n${s.own&&d.own?d.own:s.d}\n\n`;
+  STAGES.forEach(st=>{o+=`${st.name.toUpperCase()} (${st.sub}): ${r[st.k]}/5\n`;if(st.bias&&d.bias.length)o+=`  Possible biases: ${d.bias.join(", ")}\n`;st.qs.forEach((q,i)=>{const v=(d.notes[st.k+i]||"").trim();if(v)o+=`  ${q[0]}\n  ${v}\n`;});o+="\n";});
+  o+=`TOTAL: ${t}/20 (${band(t)})\nDECISION: ${dec?dec[1]:"Not yet decided"}\n`;
+  if(d.safeguards.trim())o+=`SAFEGUARDS: ${d.safeguards.trim()}\n`;
+  return o+"\nCARE Framework (Jowallah, forthcoming)";
+}
+function copy(){
+  const txt=summary(),st=$("#status");
+  const fb=()=>{const b=$("#copybox");b.hidden=false;b.value=txt;b.focus();b.select();st.className="status";st.textContent="Select the text below and copy it.";};
+  try{navigator.clipboard.writeText(txt).then(()=>{st.className="status ok";st.textContent="Copied. Paste it into your portfolio.";},fb);}catch(e){fb();}
+}
+async function share(){
+  const st=$("#status"),d=draft(current),r=d.ratings;
+  st.className="status";st.textContent="Sharing…";
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/${TABLE}`,{method:"POST",headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({participant:pid,scenario:current,c:r.c,a:r.a,r:r.r,e:r.e,decision:d.decision})});
+    if(!res.ok) throw new Error(String(res.status));
+    shared[current]={c:r.c,a:r.a,r:r.r,e:r.e,decision:d.decision};ls.set("care-shared",shared);
+    st.className="status ok";st.textContent="Shared. Open the Cohort tab to compare.";renderCases();
+    const sh=$("#share"); if(sh) sh.textContent="Share again";
+  }catch(e){st.className="status err";st.textContent="Couldn't share. Check your connection and try again; your work is saved on this device.";}
+}
+
+/* ---- cohort ---- */
+$("#cohort-pick").innerHTML=SCENARIOS.filter(s=>!s.own).map(s=>`<option value="${s.id}">${esc(s.t)}</option>`).join("");
+$("#cohort-pick").addEventListener("change",loadCohort);
+const ok=n=>Number.isInteger(n)&&n>=1&&n<=5;
+async function loadCohort(){
+  const pick=$("#cohort-pick"); if(!pick.dataset.set&&current!=="own"){pick.value=current;} pick.dataset.set="1";
+  const id=pick.value,box=$("#cohort");
+  box.innerHTML=`<div class="empty"><b>Loading responses…</b></div>`;
+  let rows;
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/${TABLE}?select=participant,c,a,r,e,decision,created_at&scenario=eq.${encodeURIComponent(id)}&order=created_at.desc&limit=2000`,{headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
+    if(!res.ok) throw new Error(String(res.status));
+    rows=await res.json();
+  }catch(e){box.innerHTML=`<div class="empty"><b>Responses couldn't load.</b>Check your connection and open this tab again.</div>`;return;}
+  if(pick.value!==id) return;
+  const seen=new Set(), latest=[];
+  rows.forEach(x=>{if(seen.has(x.participant))return;seen.add(x.participant);if(ok(x.c)&&ok(x.a)&&ok(x.r)&&ok(x.e)&&DECISIONS.some(d=>d[0]===x.decision))latest.push(x);});
+  if(!latest.length){box.innerHTML=`<div class="empty"><b>No responses for this case yet.</b>Work through it on the Decide tab and choose Share with cohort to be the first.</div>`;return;}
+  const n=latest.length, me=latest.find(x=>x.participant===pid);
+  const counts=DECISIONS.map(d=>[d,latest.filter(x=>x.decision===d[0]).length]), max=Math.max(1,...counts.map(c=>c[1]));
+  const avg=k=>latest.reduce((s,x)=>s+x[k],0)/n, tot=latest.reduce((s,x)=>s+x.c+x.a+x.r+x.e,0)/n;
+  box.innerHTML=`<div class="cohort-grid">
+    <section><div class="stat-row"><div><div class="stat">${n}</div><small>${n===1?"Response":"Responses"}</small></div><div><div class="stat">${tot.toFixed(1)}</div><small>Average total / 20</small></div></div>
+      <p class="label">Decisions</p>${counts.map(([d,c])=>`<div class="bar"><span class="lbl">${d[1]}${me&&me.decision===d[0]?" ●":""}</span><span class="track"><span class="fill" style="display:block;width:${c/max*100}%;background:${DEC_COL[d[0]]}"></span></span><span class="num">${c}</span></div>`).join("")}
+      ${me?`<p class="small" style="margin-top:10px">● marks your decision.</p>`:""}</section>
+    <section><p class="label">Average CARE ratings · out of 5</p>${STAGES.map(st=>{const a=avg(st.k);return `<div class="bar"><span class="lbl" style="color:${st.col}">${st.name}</span><span class="track"><span class="fill" style="display:block;width:${a/5*100}%;background:${st.col}"></span>${me?`<span class="you" style="left:calc(${me[st.k]/5*100}% - 2px)" title="Your rating: ${me[st.k]}"></span>`:""}</span><span class="num">${a.toFixed(1)}</span></div>`}).join("")}
+      <div class="prompt-q">Discuss: where do you differ most from the cohort, and what in your context explains it?</div></section>
+  </div>`;
+}
+
+/* ---- prompt gym ---- */
+const PRESETS=["Create a lesson on climate change.",
+ "Create a 60-minute introductory lesson on climate change for Grade 9 students with limited prior knowledge.",
+ "You are an experienced Grade 9 geography teacher. Create a 60-minute lesson on climate change for a mixed-ability class in Jamaica with limited prior knowledge. Include 3 measurable objectives, a local example (hurricanes or coastal erosion), a think-pair-share activity, differentiation for two readiness levels and a 5-question exit ticket. Do not invent statistics; mark anything that needs checking. Present it as a lesson-plan table. Ensure objectives, activities and assessment are aligned."];
+const EL=[
+ {n:"Task",h:"What should the AI do?",re:/\b(create|design|write|draft|generate|develop|produce|explain|summari[sz]e|compare|plan|build|make|suggest|list|classify|evaluate|critique|rewrite)\b/i,tip:"Start with a precise verb: design, compare, classify, evaluate."},
+ {n:"Context",h:"What background matters?",re:/\b(jamaica|caribbean|csec|cape|curriculum|school|class|syllabus|unit|prior knowledge|mixed[- ]ability|rural|local|context|background)\b/i,tip:"Add context: the curriculum, learners' prior knowledge, the local setting."},
+ {n:"Audience",h:"Who is the output for?",re:/\b(grade|year|form|students?|learners?|pupils|parents?|teachers?|colleagues|adults|beginners)\b/i,tip:"Say who it is for: grade, level, or an audience such as parents."},
+ {n:"Specifics",h:"Exactly what is required?",re:/\b\d+\b|\b(one|two|three|four|five|six|seven|eight|nine|ten)\b/i,tip:"Use numbers: minutes, number of questions, objectives or items."},
+ {n:"Constraints",h:"What must or must not be included?",re:/\b(do not|don't|avoid|must|only|no more than|at least|limit|without|reading level|exclude|keep it)\b/i,tip:"Add constraints: what to avoid, reading level, length, sources."},
+ {n:"Output format",h:"Table, rubric, bullets, email?",re:/\b(table|rubric|bullets?|list|lesson[- ]plan|email|letter|outline|quiz|worksheet|slides?|format|template|paragraphs?)\b/i,tip:"Name the format: a table, a rubric, a lesson-plan template."},
+ {n:"Quality criteria",h:"What does good look like?",re:/\b(ensure|aligned?|alignment|accurate|check|criteria|success|quality|appropriate|verify|cite|evidence|mark anything)\b/i,tip:"State quality criteria: alignment, accuracy, what should be checked."}
+];
+const pr=$("#prompt"); pr.value=ls.get("care-prompt")||PRESETS[0];
+function gym(){
+  const v=pr.value, hit=EL.map(e=>e.re.test(v)), n=hit.filter(Boolean).length, role=/\byou are\b|\bact as\b/i.test(v);
+  $("#meter").innerHTML=hit.map(h=>`<i class="${h?"on":""}"></i>`).join("");
+  $("#gnum").textContent=n;
+  $("#gtxt").innerHTML=`of 7 elements${role?" · role set":""}<br>${n>=6?"Strong. Now verify the output.":n>=4?"Getting there.":"Plenty of room to sharpen."}`;
+  $("#elist").innerHTML=EL.map((e,i)=>`<li><span class="i">${String(i+1).padStart(2,"0")}</span><span><b>${e.n}</b><small>${e.h}</small></span><span class="st ${hit[i]?"on":""}">${hit[i]?"Found":"Missing"}</span></li>`).join("");
+  const miss=EL.find((e,i)=>!hit[i]);
+  $("#gtip").innerHTML=!v.trim()?"<b>Start</b>Type or paste a prompt to check it.":miss?`<b>Next improvement</b>${miss.tip}`:"<b>All seven elements present</b>A strong prompt improves the odds of a good answer. It never guarantees a true one: verify before you use it.";
+  ls.set("care-prompt",v);
+}
+pr.addEventListener("input",gym);
+$$("[data-preset]").forEach(b=>b.addEventListener("click",()=>{pr.value=PRESETS[+b.dataset.preset];gym();}));
+
+renderCases();renderSheet();gym();
+})();
+</script>
+</body>
+</html>
